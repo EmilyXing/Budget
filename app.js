@@ -21,8 +21,18 @@ var budgetController = (function(){
     totals: {
       expense: 0,
       income: 0
-    }
+    },
+    budget: 0,
+    percentage: -1
 
+  };
+
+  var calcTotal = function(type){
+    var sum = 0;
+      data.allItems[type].forEach(function(cur){
+        sum += cur.value;
+      });
+      data.totals[type] = sum;
   };
 
   return {
@@ -48,6 +58,29 @@ var budgetController = (function(){
       // return the new item
       return newItem;
     },
+
+    // calculate budget
+    calculateBudget: function(){
+      // calculate total income and expenses
+      calcTotal('income');
+      calcTotal('expense');
+      // calculate budget
+      data.budget =  data.totals.income - data.totals.expense;
+      // calcuate percentage
+      if(data.totals.income > 0){
+        data.percentage = Math.round(data.totals.expense / data.totals.income * 100);
+      }
+    },
+
+    getBudget: function(){
+      return {
+        totalIncome: data.totals.income,
+        totalExpense: data.totals.expense,
+        budget: data.budget,
+        percentage: data.percentage
+      }
+    },
+
 
     testing: function(){
       console.log(data);
@@ -132,10 +165,11 @@ var controller = (function(budgetCtrl, UICtrl){
 
   var updateBudget = function(){
     //  Calculate the budget
-
+    budgetCtrl.calculateBudget();
     // return the budget
-
+    var budget = budgetCtrl.getBudget();
     //  display the budget on UI
+    console.log(budget);
   };
 
   var ctrlAddItem = function(){
